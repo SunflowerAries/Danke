@@ -1,35 +1,18 @@
-import {
-  Controller,
-  UseGuards,
-  Post,
-  Param,
-  ValidationPipe,
-  Req,
-  Get,
-  Patch,
-  Body,
-  UseInterceptors,
-  UploadedFile,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { Controller, UseGuards, Param, ValidationPipe, Req, Get, Patch, Body } from '@nestjs/common';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import * as winston from 'winston';
 import { UserService } from './user.service';
 import { GetUserInfoResponse } from './dto/user-info.get.response';
 import { PatchUserInfoRequest } from './dto/user-info.patch.request';
-import diskStorage from '../utils/disk';
-import { AVATAR_IMAGE_SIZE_LIMIT, UPLOAD_LOCATION } from '../utils/config';
-import { imageFilter } from '../utils/file-upload';
-import { FileService } from '../storage/file.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(JwtAuthGuard)
 @ApiTags('users')
 @Controller('users')
 export class UserController {
   private readonly logger = winston.loggers.get('customLogger');
 
-  constructor(private readonly user: UserService, private readonly file: FileService) {}
+  constructor(private readonly user: UserService) {}
 
   @Get(':id')
   @ApiParam({
@@ -79,36 +62,5 @@ export class UserController {
       watchers: 0,
     };
     return resp;
-  }
-
-  /** @brief upload and change user avatar
-   * @param[in] file
-   * @return user profile
-   *  {
-   *    id: INT,
-   *    name: string,
-   *    email: string,
-   *    nickName: string,
-   *    avatar: string,
-   *    bio: string
-   *  }
-   * @tutorial https://dev.gkzhb.top/backend/nestjs#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0
-   */
-  @Post('profile/avatar')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: `${UPLOAD_LOCATION}/avatar`,
-      }),
-      fileFilter: imageFilter,
-      limits: {
-        fileSize: AVATAR_IMAGE_SIZE_LIMIT, // max file size
-      },
-    }),
-  )
-  async uploadAvatar(@UploadedFile() file, @Req() req) {
-    // 这里没有在数据库中保存 UPLOAD_LOCATION 考虑到今后如果迁移 UPLOAD_LOCATION，这样不需要修改数据库
-    await this.file.uploadFile(req.user.id, `/avatar/${file.filename}`);
-    return this.user.setAvatar(req.user.id, `/file/avatar/${file.filename}`);
   }
 }

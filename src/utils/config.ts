@@ -72,11 +72,10 @@ export const DEV_GUARD_ALLOW_ACCESS = process.env.NODE_ENV !== NodeEnv.Productio
 export const IS_DEV = true;
 export const JWT_CONSTANT_SECRET = process.env.JWT_CONSTANT_SECRET || 'secret';
 export const MYSQL_PORT = process.env.MYSQL_PORT ? parseInt(process.env.MYSQL_PORT, 10) : 3306;
-export const MYSQL_USER = process.env.MYSQL_USER || 'root';
+export const MYSQL_USER = process.env.MYSQL_USER || 'pink';
 export const MYSQL_PASS = process.env.MYSQL_PASS || 'password';
-export const MYSQL_DBNAME = process.env.MYSQL_DBNAME || 'today';
+export const MYSQL_DBNAME = process.env.MYSQL_DBNAME || 'pink';
 export const MYSQL_HOST = process.env.MYSQL_HOST || 'localhost';
-export const SERVER_URL = process.env.SERVER_URL || 'https://fducslg.zfhu.ac.cn';
 export const TYPEORM_MIGRATIONS_TABLE_NAME = 'migrations_typeorm';
 
 export const TYPEORM_CONFIG: TypeOrmModuleOptions = {

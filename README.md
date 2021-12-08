@@ -1,38 +1,11 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+## 安装依赖
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
 
 ```bash
 $ npm install
 ```
 
-## Running the app
+## 运行项目
 
 ```bash
 # development
@@ -45,7 +18,7 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+## 测试
 
 ```bash
 # unit tests
@@ -58,16 +31,37 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## Support
+## 项目结构
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+如下简单介绍 Danke 项目的组织形式，\* 表示 gitignore
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+```
+Danke
+└───.vscode # 关于 VSCode 的项目配置文件，需要保留 eslint 的配置，具体信息可以参见 docs 中的参与开发文档
+|
+└───dist* # build 生成的编译后的代码
+└───docs # 项目文档
+└───node_modules* # npm install 安装的项目依赖包
+|
+└───src # 项目功能代码
+│   └───auth # 负责用户注册、登陆、修改密码等的模块
+│   └───entities # 通过 TypeORM 操作数据库的对象（每一个 class 都对应数据库中的一张表单）
+│   └───mail # 负责发送邮件的模块
+│   └───user # 获取用户信息的模块
+│   └───utils # 公用模块
+|
+└───test # 项目测试代码
+└───views # 发送邮件时的样式模板
+│   └───mail
+|
+│   .eslintrc.js # eslint 配置文档
+│   .gitignore
+│   .prettierignore # 记录 pretteir 不用检查的文件
+│   .prettierrc # pretteir 的配置文档
+│   nest-cli.json
+│   package-lock.json
+│   package.json # 项目依赖管理
+│   README.md # 本文档
+│   tsconfig.build.json
+│   tsconfig.json
+```
