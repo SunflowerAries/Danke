@@ -4,21 +4,29 @@ module.exports = {
     project: 'tsconfig.json',
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin'],
+  plugins: ['@typescript-eslint/eslint-plugin', 'unused-imports', "import"],
   extends: [
+    "airbnb-typescript",
     'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
+    "plugin:react/recommended",
+    "prettier",
+    "plugin:prettier/recommended"
   ],
   root: true,
   env: {
     node: true,
     jest: true,
   },
-  ignorePatterns: ['.eslintrc.js'],
+  ignorePatterns: ['.eslintrc.js', "**/*.js"],
   rules: {
-    '@typescript-eslint/interface-name-prefix': 'off',
-    '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-explicit-any': 'off',
+    "import/prefer-default-export": 0,
+    '@typescript-eslint/explicit-module-boundary-types': 0,
+    'unused-imports/no-unused-imports-ts': 2,
+    "@typescript-eslint/no-unused-vars": [
+      1,
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ],
   },
 };
