@@ -68,17 +68,10 @@ export class UserService {
     if (req.nickname !== undefined) {
       user.nickName = req.nickname;
     }
-    if (req.avatar !== undefined) {
-      user.avatar = req.avatar;
-    }
     if (req.bio !== undefined) {
       user.bio = req.bio;
     }
     user = await this.userRepo.save(user);
     return user;
-  }
-
-  async setAvatar(userId: number, avatar: string) {
-    await this.userRepo.update(userId, { avatar });
   }
 }

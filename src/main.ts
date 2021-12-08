@@ -18,9 +18,12 @@ async function bootstrap() {
     )
     .setVersion('1.0')
     .addTag('auth')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  if (DEV_GUARD_ALLOW_ACCESS) {
+    SwaggerModule.setup('api', app, document);
+  }
 
   if (DEV_GUARD_ALLOW_ACCESS) {
     // see https://stackoverflow.com/questions/19917401/error-request-entity-too-large

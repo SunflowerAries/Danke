@@ -14,9 +14,6 @@ export class GetUserInfoResponse {
   nickname: string;
 
   @ApiProperty()
-  avatar: string;
-
-  @ApiProperty()
   bio: string;
 
   @ApiProperty()

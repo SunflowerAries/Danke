@@ -4,7 +4,7 @@ import { join } from 'path';
 
 export enum MailTemplateType {
   Test = 'test',
-  Register = 'register',
+  Activate = 'activate',
   ResetPassword = 'reset',
 }
 
@@ -32,8 +32,8 @@ const templates = new Map([
     makeTemplate(MailTemplateType.Test, 'An email from fdxk.info', { code: 123456, receiver: 'test' }),
   ],
   [
-    MailTemplateType.Register,
-    makeTemplate(MailTemplateType.Register, 'Welcome to fdxk.info', { code: 123456, receiver: 'test' }),
+    MailTemplateType.Activate,
+    makeTemplate(MailTemplateType.Activate, 'Welcome to fdxk.info', { code: 123456, receiver: 'test' }),
   ],
   [
     MailTemplateType.ResetPassword,

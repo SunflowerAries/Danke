@@ -8,7 +8,7 @@ export class Selection {
   @Column('int', { primary: true, name: 'user_id' })
   userId: number;
 
-  @Column('timestamp', {
+  @Column('datetime', {
     name: 'created_at',
     default: () => 'CURRENT_TIMESTAMP',
   })

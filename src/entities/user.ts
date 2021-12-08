@@ -2,6 +2,7 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Index('uk_email', ['email'], { unique: true })
 @Index('uk_name', ['name'], { unique: true })
+@Index('uk_nickName', ['nickName'], { unique: true })
 @Entity('user')
 export class User {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
@@ -18,13 +19,6 @@ export class User {
 
   @Column('varchar', { name: 'nickName', nullable: true, length: 30 })
   nickName: string | null;
-
-  @Column('varchar', {
-    name: 'avatar',
-    length: 96,
-    default: () => "'/static/default_avatar.png'",
-  })
-  avatar: string;
 
   @Column('varchar', { name: 'bio', nullable: true, length: 128 })
   bio: string | null;

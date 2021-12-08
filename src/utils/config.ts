@@ -69,7 +69,6 @@ export const REDIS_HOST = process.env.REDIS_HOST || 'localhost';
 export const REDIS_PASS = process.env.REDIS_PASS || 'password';
 
 export const DEV_GUARD_ALLOW_ACCESS = process.env.NODE_ENV !== NodeEnv.Production;
-export const IS_DEV = true;
 export const JWT_CONSTANT_SECRET = process.env.JWT_CONSTANT_SECRET || 'secret';
 export const MYSQL_PORT = process.env.MYSQL_PORT ? parseInt(process.env.MYSQL_PORT, 10) : 3306;
 export const MYSQL_USER = process.env.MYSQL_USER || 'pink';

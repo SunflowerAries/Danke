@@ -1,5 +1,5 @@
 import { Controller, UseGuards, Param, ValidationPipe, Req, Get, Patch, Body } from '@nestjs/common';
-import { ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiParam, ApiTags } from '@nestjs/swagger';
 import * as winston from 'winston';
 import { UserService } from './user.service';
 import { GetUserInfoResponse } from './dto/user-info.get.response';
@@ -7,6 +7,7 @@ import { PatchUserInfoRequest } from './dto/user-info.patch.request';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 @ApiTags('users')
 @Controller('users')
 export class UserController {
@@ -30,7 +31,6 @@ export class UserController {
       name: user.name,
       email: user.email,
       nickname: user.nickName,
-      avatar: user.avatar,
       bio: user.bio,
       fans: 0,
       watchees: 0,
@@ -55,7 +55,6 @@ export class UserController {
       name: user.name,
       email: user.email,
       nickname: user.nickName,
-      avatar: user.avatar,
       bio: user.bio,
       fans: 0,
       watchees: 0,
