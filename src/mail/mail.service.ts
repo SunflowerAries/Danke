@@ -49,6 +49,14 @@ export class MailService {
     });
   }
 
+  async isActivated(mailAddr: string) {
+    return this.repo.count({
+      email: mailAddr,
+      status: Status.Activated,
+      type: MailTemplateType.Activate,
+    });
+  }
+
   async verify(mailAddr: string, code: string): Promise<boolean> {
     this.logger.info(`verify: ${mailAddr} with code ${code}`);
     const records = await this.repo.find({ where: { email: mailAddr, status: Status.Pending, code }, take: 1 });

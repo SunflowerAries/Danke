@@ -2,7 +2,7 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Index('uk_email', ['email'], { unique: true })
 @Index('uk_name', ['name'], { unique: true })
-@Index('uk_nickName', ['nickName'], { unique: true })
+@Index('idx_nickName', ['nickName'])
 @Entity('user')
 export class User {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
@@ -13,6 +13,9 @@ export class User {
 
   @Column('varchar', { name: 'email', length: 64 })
   email: string;
+
+  @Column('boolean', { name: 'activated', default: 0 })
+  activated: number;
 
   @Column('char', { name: 'saltedPassword', length: 145 })
   saltedPassword: string;

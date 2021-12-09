@@ -25,9 +25,6 @@ export class Mail {
   @Column('varchar', { name: 'code', nullable: false, length: 6 })
   code: string;
 
-  @Column('varchar', { name: 'requested_by', nullable: true, length: 64 })
-  requestedBy: string;
-
   @Column('datetime', { name: 'requested_at', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   requestedAt: Date;
 

@@ -12,14 +12,6 @@ export class RegisterDto {
   @MaxLength(30, { message: '用户名太长啦！最多 30 个字符哦！' })
   name: string;
 
-  // @ApiProperty({
-  //   description: '验证码',
-  // })
-  // @IsNumber()
-  // @Min(100000)
-  // @Max(999999)
-  // code: number;
-
   @ApiProperty({
     description: '密码',
     example: 'fdupink',

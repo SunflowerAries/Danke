@@ -34,8 +34,23 @@ export class UserService {
     return this.userRepo.findOne(userId);
   }
 
+  async activateById(userId: number) {
+    return this.userRepo.update(userId, { activated: 1 }).catch((e) => {
+      this.logger.error(e);
+      throw e;
+    });
+  }
+
   async updateUserPassword(userId: number, newSaltedPassword: string) {
     return this.userRepo.update(userId, { saltedPassword: newSaltedPassword }).catch((e) => {
+      this.logger.error(e);
+      // TODO(zhifeng): test the possible errors and catch them
+      throw e;
+    });
+  }
+
+  async updateUserMail(userId: number, newMail: string) {
+    return this.userRepo.update(userId, { email: newMail }).catch((e) => {
       this.logger.error(e);
       // TODO(zhifeng): test the possible errors and catch them
       throw e;

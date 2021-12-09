@@ -4,7 +4,7 @@ import { Strategy, ExtractJwt } from 'passport-jwt';
 import { JWT_CONSTANT_SECRET } from '../utils/config';
 
 export interface JwtPayload {
-  sub: number;
+  sub: string;
   name: string;
 }
 
@@ -25,7 +25,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   // the following disable is due to this function can't be static.
   /* eslint-disable class-methods-use-this */
   async validate(payload: JwtPayload) {
-    return { id: payload.sub, name: payload.name };
+    return {
+      id: Number(payload.sub.substring(0, payload.sub.length - 1)),
+      activated: Number(payload.sub[payload.sub.length - 1]),
+      name: payload.name,
+    };
   }
   /* eslint-enable */
 }

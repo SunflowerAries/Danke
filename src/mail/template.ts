@@ -5,8 +5,11 @@ import { join } from 'path';
 export enum MailTemplateType {
   Test = 'test',
   Activate = 'activate',
-  ResetPassword = 'reset',
+  ResetPassword = 'reset-password',
+  ResetMail = 'reset-mail',
 }
+
+export const mailRegex = /@fudan.edu.cn|@m.fudan.edu.cn/;
 
 export interface MailTemplate {
   type: MailTemplateType;
