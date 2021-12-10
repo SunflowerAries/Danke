@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, MaxLength, IsEmail, IsEnum } from 'class-validator';
 import { MailTemplateType } from 'src/mail/template';
+import { TEST_MAIL } from '../../utils/config';
 
 export class MailDto {
   @ApiProperty({
     description: '验证邮箱',
-    example: '17307130191@fudan.edu.cn',
+    example: TEST_MAIL,
   })
   @IsString()
   @IsEmail()

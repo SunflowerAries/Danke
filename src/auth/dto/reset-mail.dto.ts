@@ -1,5 +1,6 @@
 import { IsString, MaxLength, IsNumber, Min, Max, IsEmail } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { TEST_MAIL } from '../../utils/config';
 
 export class ResetMailDto {
   @ApiProperty({
@@ -13,7 +14,7 @@ export class ResetMailDto {
 
   @ApiProperty({
     description: '老邮箱',
-    example: 'pink@fdpink.com',
+    example: TEST_MAIL,
   })
   @IsString()
   @IsEmail()

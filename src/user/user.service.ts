@@ -1,6 +1,6 @@
 import { Injectable, ConflictException, NotFoundException, NotImplementedException } from '@nestjs/common';
 import * as winston from 'winston';
-import { User } from 'src/entities/user';
+import { RoleType, User } from 'src/entities/user';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
 import { getQueryError, QueryError } from 'src/utils/errors';
@@ -35,7 +35,7 @@ export class UserService {
   }
 
   async activateById(userId: number) {
-    return this.userRepo.update(userId, { activated: 1 }).catch((e) => {
+    return this.userRepo.update(userId, { role: RoleType.Activated }).catch((e) => {
       this.logger.error(e);
       throw e;
     });

@@ -63,6 +63,8 @@ export const MAIL_POOL = [
 export const MAIL_VERIFICATION_ENABLED =
   process.env.MAIL_VERIFICATION_ENABLED || process.env.NODE_ENV === NodeEnv.Production;
 
+export const TEST_MAIL = 'pink@fdpink.com';
+
 // redis
 export const REDIS_PORT = process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT, 10) : 6379;
 export const REDIS_HOST = process.env.REDIS_HOST || 'localhost';

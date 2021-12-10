@@ -13,7 +13,7 @@ import { MailTemplateType } from 'src/mail/template';
 import { MailService } from 'src/mail/mail.service';
 import { MAIL_VERIFICATION_ENABLED } from 'src/utils/config';
 import { UserService } from 'src/user/user.service';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DevGuard } from 'src/utils/dev.guard';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -27,6 +27,8 @@ import { mailRegex } from '../mail/template';
 import { JwtMailVerifyDto } from './dto/jwt-mail-verify.dto';
 import { JwtRetDto } from './dto/jwt-ret.dto';
 import { ResetMailDto } from './dto/reset-mail.dto';
+import { RoleType } from 'src/entities/user';
+import { LoginDto } from './dto/login.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -39,6 +41,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @ApiBody({ description: '邮箱验证测试', type: LoginDto })
   @ApiResponse({
     status: HttpStatus.CREATED,
     type: JwtRetDto,
@@ -50,6 +53,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('jwt/mail')
+  @ApiBearerAuth('JWT')
   @ApiResponse({
     status: HttpStatus.TOO_MANY_REQUESTS,
     description: '1.该邮箱地址申请了太多验证码，请检查邮箱或者耐心等待邮件\n2.系统繁忙中，请稍后再试',
@@ -87,6 +91,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('jwt/verify')
+  @ApiBearerAuth('JWT')
   @ApiResponse({
     status: HttpStatus.CONFLICT,
     description: '1.验证需绑定复旦学邮\n2.该学邮已激活\n3.已验证通过',
@@ -119,7 +124,7 @@ export class AuthController {
       }
     }
     await this.userService.activateById(user.id);
-    user.activated = 1;
+    user.role = RoleType.Activated;
     return this.authService.sign(user);
   }
 
@@ -184,6 +189,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('password')
+  @ApiBearerAuth('JWT')
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: '旧密码错误',

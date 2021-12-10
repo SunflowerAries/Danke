@@ -5,6 +5,7 @@ import { UserService } from 'src/user/user.service';
 import { verifyPassword, saltHashPassword } from '../utils/salt';
 import { JwtPayload } from './jwt.strategy';
 import { JwtRetDto } from './dto/jwt-ret.dto';
+import { RoleType } from '../entities/user';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +22,7 @@ export class AuthService {
   async sign(user: User) {
     // we choose a property name of sub to hold our user.id value to be consistent with JWT standards
     // add activated to payload
-    const payload: JwtPayload = { name: user.name, sub: String(user.id) + user.activated };
+    const payload: JwtPayload = { name: user.name, sub: String(user.id) + Number(user.role === RoleType.Activated) };
     return {
       access_token: this.jwtService.sign(payload),
       email: user.email,

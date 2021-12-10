@@ -59,6 +59,7 @@ Danke
 │   .prettierignore # 记录 pretteir 不用检查的文件
 │   .prettierrc # pretteir 的配置文档
 │   nest-cli.json
+|	ormconfig.json # TypeORM 的配置参数，对 migrations 非常重要
 │   package-lock.json
 │   package.json # 项目依赖管理
 │   README.md # 本文档
