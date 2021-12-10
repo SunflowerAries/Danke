@@ -8,6 +8,7 @@ import {
   Put,
   BadRequestException,
   Patch,
+  Inject,
 } from '@nestjs/common';
 import { MailTemplateType } from 'src/mail/template';
 import { MailService } from 'src/mail/mail.service';
@@ -29,6 +30,8 @@ import { JwtRetDto } from './dto/jwt-ret.dto';
 import { ResetMailDto } from './dto/reset-mail.dto';
 import { RoleType } from 'src/entities/user';
 import { LoginDto } from './dto/login.dto';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -37,6 +40,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly userService: UserService,
     private readonly mailService: MailService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly loggerService: Logger,
   ) {}
 
   @UseGuards(LocalAuthGuard)
@@ -64,14 +68,17 @@ export class AuthController {
   })
   async sendJwtMail(@Request() req) {
     if (req.user.activated) {
+      this.loggerService.warn(`user ${req.user.id} sendJwtMail after validation`);
       throw new ConflictException('已验证通过');
     }
     const user = await this.userService.findUserById(req.user.id);
     if (user.email.search(mailRegex) === -1) {
+      this.loggerService.warn(`user ${req.user.id} sendJwtMail without valid email`);
       throw new ConflictException('验证需绑定复旦学邮');
     }
     const isActivated = await this.mailService.isActivated(user.email);
     if (isActivated) {
+      this.loggerService.error(`user ${req.user.id} sendJwtMail after activation`);
       throw new ConflictException('该学邮已激活');
     }
     // requestVerification 已经实现了对于同一个邮箱地址不允许发送过多验证邮件，所以需要限制的是朝不同的邮箱发验证，这个需要结合 ip 地址和 mac 地址来限制
@@ -107,19 +114,23 @@ export class AuthController {
   @ApiBody({ description: '邮箱验证', type: JwtMailVerifyDto })
   async jwtVerify(@Body(new ValidationPipe()) mail: JwtMailVerifyDto, @Request() req) {
     if (req.user.activated) {
+      this.loggerService.warn(`user ${req.user.id} jwtVerify after validation`);
       throw new ConflictException('已验证通过');
     }
     const user = await this.userService.findUserById(req.user.id);
     if (user.email.search(mailRegex) === -1) {
+      this.loggerService.warn(`user ${req.user.id} jwtVerify without valid email`);
       throw new ConflictException('验证需绑定复旦学邮');
     }
     const isActivated = await this.mailService.isActivated(user.email);
     if (isActivated) {
+      this.loggerService.error(`user ${req.user.id} jwtVerify after activation`);
       throw new ConflictException('该学邮已激活');
     }
     if (MAIL_VERIFICATION_ENABLED) {
       const success = await this.mailService.verify(user.email, mail.code.toString());
       if (!success) {
+        this.loggerService.warn(`user ${req.user.id} jwtVerify fails due to code or timeout`);
         throw new BadRequestException('验证码错误，或者已经失效');
       }
     }
@@ -163,6 +174,7 @@ export class AuthController {
     if (MAIL_VERIFICATION_ENABLED) {
       const success = await this.mailService.verify(dto.oldEmail, dto.code.toString());
       if (!success) {
+        this.loggerService.warn(`user ${user.id} resetMail fails due to code or timeout`);
         throw new BadRequestException('验证码错误，或者已经失效');
       }
     }
@@ -181,6 +193,7 @@ export class AuthController {
     if (MAIL_VERIFICATION_ENABLED) {
       const success = await this.mailService.verify(dto.email, dto.code.toString());
       if (!success) {
+        this.loggerService.warn(`user ${user.id} resetPassword fails due to code or timeout`);
         throw new BadRequestException('验证码错误，或者已经失效');
       }
     }

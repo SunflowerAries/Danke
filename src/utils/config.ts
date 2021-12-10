@@ -63,7 +63,7 @@ export const MAIL_POOL = [
 export const MAIL_VERIFICATION_ENABLED =
   process.env.MAIL_VERIFICATION_ENABLED || process.env.NODE_ENV === NodeEnv.Production;
 
-export const TEST_MAIL = 'pink@fdpink.com';
+export const TEST_MAIL = '17307130191@fudan.edu.cn';
 
 // redis
 export const REDIS_PORT = process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT, 10) : 6379;
@@ -95,17 +95,3 @@ export const TYPEORM_CONFIG: TypeOrmModuleOptions = {
   // uncomment the following line for debugging, it will log all sql executed by typeorm
   logging: process.env.NODE_ENV === NodeEnv.Production ? [] : ['query', 'error'],
 };
-
-export const STATIC_LOCATION = process.env.STATIC_LOCATION || './src/storage/static';
-export const STATIC_FILE_LOCATION = process.env.STATIC_FILE_LOCATION || './src/storage/static/binary';
-export const UPLOAD_LOCATION =
-  process.env.UPLOAD_LOCATION ||
-  (process.env.NODE_ENV === NodeEnv.Development ? './src/storage/static/test' : './src/storage/static/uploaded');
-
-export const AVATAR_IMAGE_SIZE_LIMIT = process.env.AVATAR_IMAGE_SIZE_LIMIT
-  ? parseInt(process.env.IMAGE_SIZE_LIMIT, 10)
-  : 200 * 1024; // 200KB
-export const IMAGE_SIZE_LIMIT = process.env.IMAGE_SIZE_LIMIT
-  ? parseInt(process.env.IMAGE_SIZE_LIMIT, 10)
-  : 2 * 1024 * 1024; // 2MB
-export const DEFAULT_AVATAR_PATH = '/static/default_avatar.png';

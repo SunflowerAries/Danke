@@ -1,16 +1,18 @@
-import { Injectable, ConflictException, NotFoundException, NotImplementedException } from '@nestjs/common';
-import * as winston from 'winston';
+import { ConflictException, Inject, Injectable, NotFoundException, NotImplementedException } from '@nestjs/common';
 import { RoleType, User } from 'src/entities/user';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryFailedError, Repository } from 'typeorm';
-import { getQueryError, QueryError } from 'src/utils/errors';
+import { Repository } from 'typeorm';
 import { PatchUserInfoRequest } from './dto/user-info.patch.request';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
+import { QueryError } from '../storage/constant';
 
 @Injectable()
 export class UserService {
-  private readonly logger = winston.loggers.get('customLogger');
-
-  constructor(@InjectRepository(User) private readonly userRepo: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private readonly userRepo: Repository<User>,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly loggerService: Logger,
+  ) {}
 
   async findUserByNameOrMail(nameOrMail: string): Promise<User> {
     let user: User;
@@ -36,39 +38,38 @@ export class UserService {
 
   async activateById(userId: number) {
     return this.userRepo.update(userId, { role: RoleType.Activated }).catch((e) => {
-      this.logger.error(e);
+      this.loggerService.error(e);
       throw e;
     });
   }
 
   async updateUserPassword(userId: number, newSaltedPassword: string) {
     return this.userRepo.update(userId, { saltedPassword: newSaltedPassword }).catch((e) => {
-      this.logger.error(e);
-      // TODO(zhifeng): test the possible errors and catch them
+      this.loggerService.error(e);
       throw e;
     });
   }
 
   async updateUserMail(userId: number, newMail: string) {
     return this.userRepo.update(userId, { email: newMail }).catch((e) => {
-      this.logger.error(e);
-      // TODO(zhifeng): test the possible errors and catch them
+      this.loggerService.error(e);
       throw e;
     });
   }
 
   async createNewUser(name: string, email: string, saltedPassword: string) {
-    const user = await this.userRepo.create({
+    const user = this.userRepo.create({
       name,
       email,
       saltedPassword,
       nickName: name,
     });
-    await this.userRepo.save(user).catch((e: QueryFailedError) => {
-      if (getQueryError(e) === QueryError.DuplicateEntry) {
+    await this.userRepo.save(user).catch((e) => {
+      if (e.code === QueryError.DuplicateEntry) {
         throw new ConflictException('用户名或邮箱已经被占用');
       }
-      this.logger.error(e);
+      this.loggerService.error(e);
+      throw e;
     });
   }
 

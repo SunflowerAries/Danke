@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { MailTemplateType } from './template';
-import * as winston from 'winston';
 import { TooManyRequestsException } from 'src/utils/exceptions/too-many-requests.exception';
 import { MoreThan, Repository } from 'typeorm';
 import { Mail, Status } from 'src/entities/mail';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 // MAX_PENDING_INTERVAL defines the maximum time interval (in seconds) a verification request could be satisfied
 export const MAX_PENDING_INTERVAL = 60 * 60;
@@ -31,18 +32,17 @@ export interface SendMailJob {
 
 @Injectable()
 export class MailService {
-  private readonly logger = winston.loggers.get('customLogger');
-
   constructor(
     @InjectRepository(Mail) private repo: Repository<Mail>,
     @InjectQueue(VERIFICATION_QUEUE) private queue: Queue,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly loggerService: Logger,
   ) {}
 
   async getValidMailNum(mailAddr: string) {
     const currentTime = new Date();
     // getTime returns current time in milliseconds
     const offset = new Date(currentTime.getTime() - MAX_PENDING_INTERVAL * 1000);
-    this.logger.info(`currentTime ${currentTime}, offset ${offset}`);
+    this.loggerService.debug(`currentTime ${currentTime}, offset ${offset}`);
     return this.repo.count({
       email: mailAddr,
       requestedAt: MoreThan(offset),
@@ -58,7 +58,7 @@ export class MailService {
   }
 
   async verify(mailAddr: string, code: string): Promise<boolean> {
-    this.logger.info(`verify: ${mailAddr} with code ${code}`);
+    this.loggerService.debug(`verify: ${mailAddr} with code ${code}`);
     const records = await this.repo.find({ where: { email: mailAddr, status: Status.Pending, code }, take: 1 });
     if (records.length !== 0) {
       records[0].status = Status.Activated;
@@ -69,13 +69,15 @@ export class MailService {
   }
 
   async requestVerification(type: MailTemplateType, mailAddr: string) {
-    this.logger.info(`requestVerification: ${type} to ${mailAddr}`);
+    this.loggerService.debug(`requestVerification: ${type} to ${mailAddr}`);
     const numPending = await this.getValidMailNum(mailAddr);
     if (numPending > MAX_PENDING_NUM) {
+      this.loggerService.warn(`${mailAddr} request too many verification`);
       throw new TooManyRequestsException('该邮箱地址申请了太多验证码，请检查邮箱或者耐心等待');
     }
     const numWaiting = await this.queue.getWaitingCount();
     if (numWaiting > MAX_WAITING_LIMIT) {
+      this.loggerService.warn(`mailer queue is very busy`);
       throw new TooManyRequestsException('邮件系统繁忙中，请稍后再试');
     }
     const mail = new Mail();
@@ -85,7 +87,7 @@ export class MailService {
     mail.status = Status.Pending;
     mail.type = type;
     await this.repo.save(mail);
-    this.logger.info(`requestVerification: ${type} to ${mailAddr} saved! code is ${mail.code}`);
+    this.loggerService.debug(`requestVerification: ${type} to ${mailAddr} saved! code is ${mail.code}`);
     const job: SendMailJob = {
       type,
       code: mail.code,
@@ -98,6 +100,6 @@ export class MailService {
       attempts: 5,
     });
     const cnt = await this.queue.getJobCounts();
-    this.logger.info(`requestVerification: job has been enqueued, ${JSON.stringify(cnt)} in queue`);
+    this.loggerService.debug(`requestVerification: job has been enqueued, ${JSON.stringify(cnt)} in queue`);
   }
 }

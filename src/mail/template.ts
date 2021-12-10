@@ -32,23 +32,25 @@ function makeTemplate(tp: MailTemplateType, subject: string, defaultArgs: object
 const templates = new Map([
   [
     MailTemplateType.Test,
-    makeTemplate(MailTemplateType.Test, 'An email from fdxk.info', { code: 123456, receiver: 'test' }),
+    makeTemplate(MailTemplateType.Test, 'An email from fdpink', { code: 123456, receiver: 'test' }),
   ],
   [
     MailTemplateType.Activate,
-    makeTemplate(MailTemplateType.Activate, 'Welcome to fdxk.info', { code: 123456, receiver: 'test' }),
+    makeTemplate(MailTemplateType.Activate, 'Welcome to fdpink', { code: 123456, receiver: 'test' }),
   ],
   [
     MailTemplateType.ResetPassword,
-    makeTemplate(
-      MailTemplateType.ResetPassword,
-      'Reset password on fdxk.info',
-
-      {
-        code: 123456,
-        receiver: 'test',
-      },
-    ),
+    makeTemplate(MailTemplateType.ResetPassword, 'Reset password on fdpink', {
+      code: 123456,
+      receiver: 'test',
+    }),
+  ],
+  [
+    MailTemplateType.ResetMail,
+    makeTemplate(MailTemplateType.ResetMail, 'Reset binded mail on fdpink', {
+      code: 123456,
+      receiver: 'test',
+    }),
   ],
 ]);
 

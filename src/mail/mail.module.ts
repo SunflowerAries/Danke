@@ -34,20 +34,6 @@ import { createTransport } from 'nodemailer';
       // have different transport supplier, which is hard to config.
       useValue: [
         new Mailer(
-          createTransport({
-            host: 'smtp-relay.sendinblue.com',
-            port: 587,
-            secure: false,
-            auth: {
-              user: 'ichneumon.hu@foxmail.com',
-              pass: 'Eynp08R3MhrbP4xA',
-            },
-          }),
-          'noreply@fdxk.info',
-          300,
-          100,
-        ),
-        new Mailer(
           createTransport(
             mg({
               auth: {

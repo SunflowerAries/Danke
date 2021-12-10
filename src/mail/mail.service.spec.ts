@@ -1,6 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { newTestStorage, StorageService } from 'src/storage/storage.service';
-import { createAllTables } from 'src/storage/tables';
 import { MailService, MAX_PENDING_INTERVAL, VERIFICATION_QUEUE } from './mail.service';
 import { MailTemplateType } from './template';
 import { Mail } from '../entities/mail';
@@ -15,7 +13,6 @@ import { Mailer, HOUR_IN_MS } from './mailer';
 
 describe('MailService', () => {
   let service: MailService;
-  let storage: StorageService;
   let mailRepo: Repository<Mail>;
   let queue: Queue;
   const fakeProcessor = jest.fn();

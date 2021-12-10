@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotAcceptableException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotAcceptableException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/entities/user';
 import { UserService } from 'src/user/user.service';
@@ -6,10 +6,16 @@ import { verifyPassword, saltHashPassword } from '../utils/salt';
 import { JwtPayload } from './jwt.strategy';
 import { JwtRetDto } from './dto/jwt-ret.dto';
 import { RoleType } from '../entities/user';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService, private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly loggerService: Logger,
+  ) {}
 
   async validateUser(nameOrMail: string, pass: string): Promise<User> {
     const user = await this.userService.findUserByNameOrMail(nameOrMail);

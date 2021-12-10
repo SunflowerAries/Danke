@@ -43,7 +43,7 @@ export class Mailer {
   }
 
   async send(receiver: string, subject: string, content: string) {
-    this.logger.info(`${this.sender} is sending`);
+    this.logger.debug(`${this.sender} is sending`);
     const now = new Date();
     const ts = now.getTime();
     const wait = this.nextSend - ts;
@@ -90,7 +90,7 @@ export class Mailer {
       this.nextSend = Math.max(this.nextSend, this.dayRecord.front() + DAY_IN_MS + 50);
     }
 
-    this.logger.info(`next send at ${new Date(this.nextSend).toTimeString()}`);
+    this.logger.debug(`next send at ${new Date(this.nextSend).toTimeString()}`);
   }
 
   // nextReady returns the approximated next timestamp for sending
