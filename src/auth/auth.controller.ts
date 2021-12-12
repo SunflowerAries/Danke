@@ -32,6 +32,7 @@ import { RoleType } from 'src/entities/user';
 import { LoginDto } from './dto/login.dto';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import { ElearningVerifyDto } from './dto/elearning-verify.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -61,6 +62,19 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.TOO_MANY_REQUESTS,
     description: '1.该邮箱地址申请了太多验证码，请检查邮箱或者耐心等待邮件\n2.系统繁忙中，请稍后再试',
+  @Post('elearning-verify')
+  @ApiParam({
+    name: 'elearningToken',
+    description: '这是 elearning 的 token 的验证入口',
+  })
+  async verifyElearning(@Body(new ValidationPipe()) dto: ElearningVerifyDto) {
+    return this.authService.verifyElearning(dto.token);
+  }
+
+  @Post('mail')
+  @ApiParam({
+    name: 'mailID',
+    description: '这是测试测试',
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,

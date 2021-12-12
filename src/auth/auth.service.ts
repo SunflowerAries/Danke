@@ -8,6 +8,8 @@ import { JwtRetDto } from './dto/jwt-ret.dto';
 import { RoleType } from '../entities/user';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import axios, { AxiosResponse } from 'axios';
+import { ElearningRespondsDto } from './dto/elearning-verify.dto';
 
 @Injectable()
 export class AuthService {
@@ -54,5 +56,25 @@ export class AuthService {
       return this.userService.updateUserPassword(userId, saltHashPassword(newPassowrd));
     }
     throw new BadRequestException('旧密码错误');
+  }
+
+  async verifyElearning(token: string) {
+    const responds = await axios
+      .get('https://elearning.fudan.edu.cn/api/v1/users/self/profile', {
+        params: {
+          access_token: token,
+        },
+      })
+      .then(function (response: AxiosResponse<ElearningRespondsDto>) {
+        const data = response.data;
+        return {
+          real_name: data.name,
+          fudan_id: data.login_id,
+        };
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    return responds;
   }
 }
