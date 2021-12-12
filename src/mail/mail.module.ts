@@ -2,12 +2,13 @@ import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Mail } from 'src/entities/mail';
-import { MAIL_QUEUE_TPS, REDIS_HOST, REDIS_PASS, REDIS_PORT } from 'src/utils/config';
+import { MAILGUN_DOMAIN, MAIL_QUEUE_TPS, REDIS_HOST, REDIS_PASS, REDIS_PORT } from 'src/utils/config';
 import { MailService, VERIFICATION_QUEUE } from './mail.service';
 import { MailProcessor, MAILERS_TOKEN } from './mail.processor';
 import { Mailer } from './mailer';
 import * as mg from 'nodemailer-mailgun-transport';
 import { createTransport } from 'nodemailer';
+import { MAILGUN_APIKEY } from '../utils/config';
 
 @Module({
   imports: [
@@ -37,8 +38,8 @@ import { createTransport } from 'nodemailer';
           createTransport(
             mg({
               auth: {
-                api_key: '086c39cf2c69d7961ae659800e267a20-d5e69b0b-937f6cad',
-                domain: 'mail.fdxk.info',
+                api_key: MAILGUN_APIKEY,
+                domain: MAILGUN_DOMAIN,
               },
             }),
           ),

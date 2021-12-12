@@ -65,6 +65,9 @@ export const MAIL_VERIFICATION_ENABLED =
 
 export const TEST_MAIL = '17307130191@fudan.edu.cn';
 
+export const MAILGUN_APIKEY = process.env.MAILGUN_APIKEY || 'api_key';
+export const MAILGUN_DOMAIN = process.env.MAILGUN_DOMAIN || 'domain';
+
 // redis
 export const REDIS_PORT = process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT, 10) : 6379;
 export const REDIS_HOST = process.env.REDIS_HOST || 'localhost';
