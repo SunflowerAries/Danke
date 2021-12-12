@@ -8,6 +8,7 @@ import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import { SucceedDto } from '../auth/dto/succeed.dto';
 
 // MAX_PENDING_INTERVAL defines the maximum time interval (in seconds) a verification request could be satisfied
 export const MAX_PENDING_INTERVAL = 60 * 60;
@@ -101,5 +102,6 @@ export class MailService {
     });
     const cnt = await this.queue.getJobCounts();
     this.loggerService.debug(`requestVerification: job has been enqueued, ${JSON.stringify(cnt)} in queue`);
+    return { message: '验证码已发送至您的邮箱中请注意查收' } as SucceedDto;
   }
 }
