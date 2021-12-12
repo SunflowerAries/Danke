@@ -8,11 +8,13 @@ import { JwtStrategy } from './jwt.strategy';
 import { JWT_CONSTANT_SECRET } from '../utils/config';
 import { AuthController } from './auth.controller';
 import { MailModule } from 'src/mail/mail.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
     UserModule,
     MailModule,
+    HttpModule,
     PassportModule,
     JwtModule.register({
       secret: JWT_CONSTANT_SECRET,

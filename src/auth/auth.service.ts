@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, NotAcceptableException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/entities/user';
 import { UserService } from 'src/user/user.service';
@@ -8,14 +8,19 @@ import { JwtRetDto } from './dto/jwt-ret.dto';
 import { RoleType } from '../entities/user';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
-import axios, { AxiosResponse } from 'axios';
+import { HttpService } from '@nestjs/axios';
+import { map } from 'rxjs/operators';
+import { AxiosResponse } from 'axios';
 import { ElearningRespondsDto } from './dto/elearning-verify.dto';
+import { firstValueFrom } from 'rxjs';
+import { SucceedDto } from './dto/succeed.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private httpService: HttpService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly loggerService: Logger,
   ) {}
 
@@ -40,41 +45,46 @@ export class AuthService {
 
   async register(name: string, email: string, password: string) {
     await this.userService.createNewUser(name, email, saltHashPassword(password));
+    return { message: '注册成功' } as SucceedDto;
   }
 
   async resetPassword(userId: number, password: string) {
     await this.userService.updateUserPassword(userId, saltHashPassword(password));
+    return { message: '密码重置成功' } as SucceedDto;
   }
 
   async resetMail(userId: number, mail: string) {
     await this.userService.updateUserMail(userId, mail);
+    return { message: '邮箱重置成功' } as SucceedDto;
   }
 
   async changePassword(userId: number, oldPassword: string, newPassowrd: string) {
     const user = await this.userService.findUserById(userId);
     if (verifyPassword(oldPassword, user.saltedPassword)) {
-      return this.userService.updateUserPassword(userId, saltHashPassword(newPassowrd));
+      this.userService.updateUserPassword(userId, saltHashPassword(newPassowrd));
+      return { message: '密码重置成功' } as SucceedDto;
     }
     throw new BadRequestException('旧密码错误');
   }
 
-  async verifyElearning(token: string) {
-    const responds = await axios
-      .get('https://elearning.fudan.edu.cn/api/v1/users/self/profile', {
-        params: {
-          access_token: token,
-        },
-      })
-      .then(function (response: AxiosResponse<ElearningRespondsDto>) {
-        const data = response.data;
-        return {
-          real_name: data.name,
-          fudan_id: data.login_id,
-        };
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-    return responds;
+  async elearningVerify(token: string, userId: number) {
+    await firstValueFrom(
+      this.httpService
+        .get('https://elearning.fudan.edu.cn/api/v1/users/self/profile', {
+          params: {
+            access_token: token,
+          },
+        })
+        .pipe(
+          map((response: AxiosResponse<ElearningRespondsDto>) => {
+            return { id: response.data.login_id };
+          }),
+        ),
+    ).catch((e) => {
+      this.loggerService.warn(e);
+      throw new NotFoundException('token 错误');
+    });
+    this.userService.activateById(userId);
+    return { message: '验证成功' } as SucceedDto;
   }
 }

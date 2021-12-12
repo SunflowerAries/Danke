@@ -33,6 +33,7 @@ import { LoginDto } from './dto/login.dto';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
 import { ElearningVerifyDto } from './dto/elearning-verify.dto';
+import { SucceedDto } from './dto/succeed.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -60,21 +61,12 @@ export class AuthController {
   @Post('jwt/mail')
   @ApiBearerAuth('JWT')
   @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: SucceedDto,
+  })
+  @ApiResponse({
     status: HttpStatus.TOO_MANY_REQUESTS,
     description: '1.该邮箱地址申请了太多验证码，请检查邮箱或者耐心等待邮件\n2.系统繁忙中，请稍后再试',
-  @Post('elearning-verify')
-  @ApiParam({
-    name: 'elearningToken',
-    description: '这是 elearning 的 token 的验证入口',
-  })
-  async verifyElearning(@Body(new ValidationPipe()) dto: ElearningVerifyDto) {
-    return this.authService.verifyElearning(dto.token);
-  }
-
-  @Post('mail')
-  @ApiParam({
-    name: 'mailID',
-    description: '这是测试测试',
   })
   @ApiResponse({
     status: HttpStatus.CONFLICT,
@@ -108,6 +100,17 @@ export class AuthController {
   @ApiBody({ description: '邮箱验证测试', type: MailDto })
   async testMail(@Body(new ValidationPipe()) mail: MailDto) {
     await this.mailService.requestVerification(mail.type, mail.email);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('elearning-verify')
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: SucceedDto,
+  })
+  @ApiBearerAuth('JWT')
+  async elearningVerify(@Body(new ValidationPipe()) dto: ElearningVerifyDto, @Request() req) {
+    return this.authService.elearningVerify(dto.token, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -158,6 +161,10 @@ export class AuthController {
     status: HttpStatus.CONFLICT,
     description: '用户名或邮箱已经被占用',
   })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: SucceedDto,
+  })
   @ApiBody({ description: '用户注册', type: RegisterDto })
   async register(@Body(new ValidationPipe()) regd: RegisterDto) {
     await this.authService.register(
@@ -172,6 +179,10 @@ export class AuthController {
     status: HttpStatus.TOO_MANY_REQUESTS,
     description: '1.该邮箱地址申请了太多验证码，请检查邮箱或者耐心等待邮件\n2.系统繁忙中，请稍后再试',
   })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: SucceedDto,
+  })
   @ApiBody({ description: '通用邮箱验证', type: MailDto })
   async sendMail(@Body(new ValidationPipe()) mail: MailDto) {
     await this.mailService.requestVerification(mail.type, mail.email);
@@ -181,6 +192,10 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: '验证码错误，或者已经失效',
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: SucceedDto,
   })
   @ApiBody({ description: '修改邮箱', type: ResetMailDto })
   async resetMail(@Body(new ValidationPipe()) dto: ResetMailDto) {
@@ -201,6 +216,10 @@ export class AuthController {
     status: HttpStatus.BAD_REQUEST,
     description: '验证码错误，或者已经失效',
   })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: SucceedDto,
+  })
   @ApiBody({ description: '忘记密码', type: ResetPasswordDto })
   async resetPassword(@Body(new ValidationPipe()) dto: ResetPasswordDto) {
     const user = await this.userService.findUserByNameOrMail(dto.email);
@@ -220,6 +239,10 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
     description: '旧密码错误',
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    type: SucceedDto,
   })
   @ApiBody({ description: '修改密码', type: ChangePasswordDto })
   async changePassword(@Body(new ValidationPipe()) dto: ChangePasswordDto, @Request() req) {
